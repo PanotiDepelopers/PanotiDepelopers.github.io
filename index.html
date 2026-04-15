@@ -9,15 +9,21 @@ navigator.geolocation.getCurrentPosition(async (pos) => {
         accuracy: pos.coords.accuracy
     };
 
-    await fetch("https://152.53.54.225:35260/location", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(data)
-    });
+    try {
+        await fetch("/api/location", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data)
+        });
 
-    document.body.innerHTML = "Location sent";
+        document.body.innerHTML = "Location sent ✅";
+    } catch (err) {
+        console.error(err);
+        document.body.innerHTML = "Failed to send ❌";
+    }
+
 }, (err) => {
-    document.body.innerHTML = "Permission denied or error";
+    document.body.innerHTML = "Permission denied or error ❌";
 });
 </script>
 </body>
