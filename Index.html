@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HijabiPrincess Invoice Generator</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+:root{
+  --ink:#1c1917;
+  --ivory:#f8f4ec;
+  --card:#ffffff;
+  --gold:#a9813f;
+  --gold-soft:#e7d5ad;
+  --rose:#b46a63;
+  --line:#e7e1d4;
+  --muted:#8a8175;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
+}
+
+body{
+  background:var(--ivory);
+  padding:36px;
+  color:var(--ink);
+}
+
+h1,h2,h3{
+  font-family:'Playfair Display',serif;
+}
+
+.page-title{
+  text-align:center;
+  font-size:14px;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:28px;
+}
+
+.container{
+  display:flex;
+  gap:30px;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:flex-start;
+}
+
+/* ---------- FORM ---------- */
+
+.form{
+  width:380px;
+  background:var(--card);
+  padding:26px;
+  border-radius:14px;
+  box-shadow:0 20px 40px rgba(28,25,23,.08);
+  border:1px solid var(--line);
+}
+
+.form h2{
+  margin-bottom:4px;
+  font-size:24px;
+}
+
+.form .sub{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:20px;
+  letter-spacing:.5px;
+}
+
+.section-label{
+  font-size:11px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--gold);
+  font-weight:600;
+  margin:20px 0 10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.section-label::after{
+  content:"";
+  flex:1;
+  height:1px;
+  background:var(--line);
+}
+
+input,select{
+  width:100%;
+  padding:11px 12px;
+  margin-bottom:10px;
+  border-radius:8px;
+  border:1px solid var(--line);
+  font-size:14px;
+  background:#fdfcfa;
+  color:var(--ink);
+}
+
+input:focus,select:focus{
+  outline:none;
+  border-color:var(--gold);
+}
+
+.row2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+button{
+  width:100%;
+  padding:13px;
+  border:none;
+  font-size:14px;
+  font-weight:600;
+  border-radius:8px;
+  cursor:pointer;
+  letter-spacing:.4px;
+  transition:transform .15s ease, opacity .15s ease;
+}
+
+button:active{
+  transform:scale(.98);
+}
+
+.btn-add{
+  background:var(--ink);
+  color:var(--ivory);
+}
+
+.btn-add:hover{
+  opacity:.85;
+}
+
+.btn-generate{
+  background:linear-gradient(135deg,var(--gold),#8f6c2f);
+  color:#fff;
+  margin-top:18px;
+}
+
+.btn-generate:hover{
+  opacity:.9;
+}
+
+/* ---------- ITEM LIST IN FORM ---------- */
+
+.item-list{
+  margin-top:6px;
+}
+
+.item-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:#fbf8f2;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:8px 10px;
+  margin-bottom:8px;
+}
+
+.item-row img{
+  width:36px;
+  height:44px;
+  object-fit:cover;
+  border-radius:5px;
+  background:var(--gold-soft);
+  flex-shrink:0;
+}
+
+.item-row .placeholder{
+  width:36px;
+  height:44px;
+  border-radius:5px;
+  background:var(--gold-soft);
+  flex-shrink:0;
+}
+
+.item-row .meta{
+  flex:1;
+  min-width:0;
+}
+
+.item-row .meta .nm{
+  font-size:13px;
+  font-weight:600;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.item-row .meta .sub{
+  font-size:11px;
+  color:var(--muted);
+  margin:0;
+}
+
+.item-row .amt{
+  font-size:13px;
+  font-weight:600;
+  color:var(--gold);
+  white-space:nowrap;
+}
+
+.item-row .remove{
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  background:var(--rose);
+  color:#fff;
+  border:none;
+  font-size:13px;
+  line-height:1;
+  cursor:pointer;
+  flex-shrink:0;
+}
+
+.empty-note{
+  font-size:12px;
+  color:var(--muted);
+  text-align:center;
+  padding:10px 0;
+}
+
+.running-total{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+  padding-top:8px;
+  border-top:1px dashed var(--line);
+  margin-top:4px;
+  font-weight:600;
+}
+
+/* ---------- INVOICE ---------- */
+
+#invoice{
+  width:520px;
+  background:var(--card);
+  padding:32px;
+  border-radius:14px;
+  box-shadow:0 20px 40px rgba(28,25,23,.08);
+  display:none;
+  border:1px solid var(--line);
+}
+
+.header{
+  text-align:center;
+  border-bottom:2px solid var(--ink);
+  padding-bottom:16px;
+  margin-bottom:18px;
+}
+
+.header h1{
+  font-size:32px;
+  letter-spacing:1px;
+}
+
+.header p{
+  font-size:12px;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-top:4px;
+}
+
+.meta-row{
+  display:flex;
+  justify-content:space-between;
+  font-size:11px;
+  color:var(--muted);
+  margin-bottom:18px;
+}
+
+.details{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:18px;
+}
+
+.info p{
+  margin:3px 0;
+  font-size:13px;
+}
+
+.info b{
+  color:var(--gold);
+  font-weight:600;
+}
+
+.items-label{
+  font-size:11px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--gold);
+  font-weight:600;
+  margin-bottom:10px;
+  border-bottom:1px solid var(--line);
+  padding-bottom:6px;
+}
+
+.bill-item{
+  display:flex;
+  gap:14px;
+  align-items:center;
+  padding:10px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.bill-item img{
+  width:54px;
+  height:68px;
+  object-fit:cover;
+  border-radius:6px;
+  border:1px solid var(--line);
+  flex-shrink:0;
+}
+
+.bill-item .ph{
+  width:54px;
+  height:68px;
+  border-radius:6px;
+  background:var(--gold-soft);
+  flex-shrink:0;
+}
+
+.bill-item .info-col{
+  flex:1;
+}
+
+.bill-item .name{
+  font-size:14px;
+  font-weight:600;
+}
+
+.bill-item .type-tag{
+  display:inline-block;
+  font-size:9px;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  color:var(--rose);
+  border:1px solid var(--rose);
+  border-radius:4px;
+  padding:1px 6px;
+  margin-top:3px;
+}
+
+.bill-item .qtyprice{
+  font-size:12px;
+  color:var(--muted);
+  margin-top:4px;
+}
+
+.bill-item .line-total{
+  font-size:14px;
+  font-weight:600;
+  white-space:nowrap;
+}
+
+.totals{
+  margin-top:18px;
+}
+
+.totals .line{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+  padding:4px 0;
+  color:var(--muted);
+}
+
+.totals .discount-line{
+  color:var(--rose);
+}
+
+.totals .grand{
+  display:flex;
+  justify-content:space-between;
+  font-size:24px;
+  font-weight:700;
+  color:var(--gold);
+  margin-top:8px;
+  padding-top:10px;
+  border-top:2px solid var(--ink);
+  font-family:'Playfair Display',serif;
+}
+
+.footer{
+  text-align:center;
+  margin-top:28px;
+  font-size:13px;
+  color:var(--muted);
+  font-style:italic;
+}
+
+.download{
+  margin-top:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="page-title">HijabiPrincess &mdash; Boutique Invoice Studio</div>
+
+<div class="container">
+
+<div class="form">
+
+<h2>New Order</h2>
+<div class="sub">Add every abaya and stole, then generate one combined bill.</div>
+
+<div class="section-label">Customer</div>
+
+<input id="name" placeholder="Customer Name">
+<div class="row2">
+<input id="contact" placeholder="Contact">
+<input id="email" placeholder="Email">
+</div>
+<input id="address" placeholder="Address">
+<input id="city" placeholder="City">
+
+<div class="section-label">Add Item</div>
+
+<select id="itemType">
+<option value="Abaya">Abaya</option>
+<option value="Stole">Stole</option>
+</select>
+
+<input id="itemName" placeholder="Item Name">
+
+<div class="row2">
+<input type="number" id="itemPrice" placeholder="Price (Rs)">
+<input type="number" id="itemQty" placeholder="Quantity" value="1" min="1">
+</div>
+
+<input type="file" id="itemImage" accept="image/*">
+
+<button class="btn-add" onclick="addItem()">+ Add to Bill</button>
+
+<div class="section-label">Items in this Bill</div>
+
+<div class="item-list" id="itemList">
+<div class="empty-note" id="emptyNote">No items added yet.</div>
+</div>
+
+<div class="running-total">
+<span>Items Subtotal</span>
+<span id="runningSubtotal">Rs 0</span>
+</div>
+
+<div class="section-label">Discount</div>
+
+<div class="row2">
+<select id="discountType">
+<option value="percent">Percent (%)</option>
+<option value="flat">Flat (Rs)</option>
+</select>
+<input type="number" id="discountValue" placeholder="Discount value" value="0" min="0">
+</div>
+
+<div class="section-label">Delivery</div>
+
+<input type="number" id="delivery" placeholder="Delivery Charges" value="0">
+
+<button class="btn-generate" onclick="generateBill()">Generate Combined Bill</button>
+
+</div>
+
+<div>
+
+<div id="invoice">
+
+<div class="header">
+<h1>HijabiPrincess</h1>
+<p>Premium Abayas &amp; Stoles</p>
+</div>
+
+<div class="meta-row">
+<span id="invoiceNo"></span>
+<span id="invoiceDate"></span>
+</div>
+
+<div class="details">
+<div class="info">
+<p><b>Name:</b> <span id="bname"></span></p>
+<p><b>Contact:</b> <span id="bcontact"></span></p>
+<p><b>Email:</b> <span id="bemail"></span></p>
+<p><b>Address:</b> <span id="baddress"></span></p>
+<p><b>City:</b> <span id="bcity"></span></p>
+</div>
+</div>
+
+<div class="items-label">Order Items</div>
+
+<div id="billItems"></div>
+
+<div class="totals">
+<div class="line">
+<span>Items Subtotal</span>
+<span id="bsubtotal">Rs 0</span>
+</div>
+<div class="line discount-line" id="discountLine">
+<span id="discountLabel">Discount</span>
+<span id="bdiscount">- Rs 0</span>
+</div>
+<div class="line">
+<span>Delivery</span>
+<span id="bdelivery">Rs 0</span>
+</div>
+<div class="grand">
+<span>Total</span>
+<span id="btotal">Rs 0</span>
+</div>
+</div>
+
+<div class="footer">
+Thank you for shopping with us &hearts;
+</div>
+
+</div>
+
+<button class="download" onclick="downloadBill()">Download Bill Image</button>
+
+</div>
+
+</div>
+
+<script>
+
+let items = [];
+let idCounter = 0;
+
+function money(n){
+  return "Rs " + Number(n || 0).toLocaleString();
+}
+
+function renderItemList(){
+  const list = document.getElementById("itemList");
+  const emptyNote = document.getElementById("emptyNote");
+
+  list.innerHTML = "";
+
+  if(items.length === 0){
+    list.appendChild(emptyNote);
+    document.getElementById("runningSubtotal").innerText = money(0);
+    return;
+  }
+
+  let subtotal = 0;
+
+  items.forEach(function(item){
+    const lineTotal = item.price * item.qty;
+    subtotal += lineTotal;
+
+    const row = document.createElement("div");
+    row.className = "item-row";
+
+    const imgHtml = item.image
+      ? '<img src="' + item.image + '">'
+      : '<div class="placeholder"></div>';
+
+    row.innerHTML =
+      imgHtml +
+      '<div class="meta">' +
+        '<div class="nm">' + item.name + '</div>' +
+        '<p class="sub">' + item.type + ' &middot; Qty ' + item.qty + ' &middot; ' + money(item.price) + '</p>' +
+      '</div>' +
+      '<div class="amt">' + money(lineTotal) + '</div>' +
+      '<button class="remove" onclick="removeItem(' + item.id + ')">&times;</button>';
+
+    list.appendChild(row);
+  });
+
+  document.getElementById("runningSubtotal").innerText = money(subtotal);
+}
+
+function addItem(){
+  const type = document.getElementById("itemType").value;
+  const name = document.getElementById("itemName").value.trim();
+  const price = Number(document.getElementById("itemPrice").value);
+  const qty = Number(document.getElementById("itemQty").value) || 1;
+  const fileInput = document.getElementById("itemImage");
+  const file = fileInput.files[0];
+
+  if(!name || !price){
+    alert("Please enter an item name and price before adding.");
+    return;
+  }
+
+  const newItem = {
+    id: idCounter++,
+    type: type,
+    name: name,
+    price: price,
+    qty: qty,
+    image: null
+  };
+
+  function finishAdd(){
+    items.push(newItem);
+    renderItemList();
+
+    document.getElementById("itemName").value = "";
+    document.getElementById("itemPrice").value = "";
+    document.getElementById("itemQty").value = "1";
+    fileInput.value = "";
+  }
+
+  if(file){
+    const reader = new FileReader();
+    reader.onload = function(e){
+      newItem.image = e.target.result;
+      finishAdd();
+    };
+    reader.readAsDataURL(file);
+  } else {
+    finishAdd();
+  }
+}
+
+function removeItem(id){
+  items = items.filter(function(item){ return item.id !== id; });
+  renderItemList();
+}
+
+function generateBill(){
+  if(items.length === 0){
+    alert("Add at least one abaya or stole before generating the bill.");
+    return;
+  }
+
+  const delivery = Number(document.getElementById("delivery").value) || 0;
+  const discountType = document.getElementById("discountType").value;
+  const discountValue = Number(document.getElementById("discountValue").value) || 0;
+
+  document.getElementById("invoice").style.display = "block";
+
+  document.getElementById("bname").innerText = document.getElementById("name").value;
+  document.getElementById("bcontact").innerText = document.getElementById("contact").value;
+  document.getElementById("bemail").innerText = document.getElementById("email").value;
+  document.getElementById("baddress").innerText = document.getElementById("address").value;
+  document.getElementById("bcity").innerText = document.getElementById("city").value;
+
+  const now = new Date();
+  document.getElementById("invoiceNo").innerText =
+    "Invoice #" + now.getFullYear() + String(now.getMonth()+1).padStart(2,"0") + String(now.getDate()).padStart(2,"0") + "-" + Math.floor(Math.random()*900+100);
+  document.getElementById("invoiceDate").innerText = now.toLocaleDateString();
+
+  const billItemsEl = document.getElementById("billItems");
+  billItemsEl.innerHTML = "";
+
+  let subtotal = 0;
+
+  items.forEach(function(item){
+    const lineTotal = item.price * item.qty;
+    subtotal += lineTotal;
+
+    const row = document.createElement("div");
+    row.className = "bill-item";
+
+    const imgHtml = item.image
+      ? '<img src="' + item.image + '">'
+      : '<div class="ph"></div>';
+
+    row.innerHTML =
+      imgHtml +
+      '<div class="info-col">' +
+        '<div class="name">' + item.name + '</div>' +
+        '<div class="type-tag">' + item.type + '</div>' +
+        '<div class="qtyprice">Qty ' + item.qty + ' &times; ' + money(item.price) + '</div>' +
+      '</div>' +
+      '<div class="line-total">' + money(lineTotal) + '</div>';
+
+    billItemsEl.appendChild(row);
+  });
+
+  let discountAmount = 0;
+  if(discountType === "percent"){
+    discountAmount = subtotal * (discountValue / 100);
+  } else {
+    discountAmount = discountValue;
+  }
+  discountAmount = Math.min(discountAmount, subtotal);
+
+  const discountLine = document.getElementById("discountLine");
+  if(discountValue > 0){
+    discountLine.style.display = "flex";
+    const label = discountType === "percent" ? "Discount (" + discountValue + "%)" : "Discount";
+    document.getElementById("discountLabel").innerText = label;
+    document.getElementById("bdiscount").innerText = "- " + money(discountAmount);
+  } else {
+    discountLine.style.display = "none";
+  }
+
+  const finalTotal = subtotal - discountAmount + delivery;
+
+  document.getElementById("bsubtotal").innerText = money(subtotal);
+  document.getElementById("bdelivery").innerText = money(delivery);
+  document.getElementById("btotal").innerText = money(finalTotal);
+}
+
+function downloadBill(){
+  html2canvas(document.getElementById("invoice")).then(function(canvas){
+    const link = document.createElement("a");
+    link.download = "HijabiPrincess_Bill.png";
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+}
+
+</script>
+
+</body>
+</html>
